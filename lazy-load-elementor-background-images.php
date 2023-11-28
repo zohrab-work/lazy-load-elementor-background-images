@@ -9,7 +9,6 @@
  */
 
 add_action('plugins_loaded', 'LazyLoadElementorBackgroundImages::init');
-
 class LazyLoadElementorBackgroundImages
 {
     public static function init()
