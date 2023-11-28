@@ -1,0 +1,41 @@
+name: Deploy to AWS EC2
+on:
+  push:
+    branches:
+      - main  # Change this to the branch you want to deploy
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Install Dependencies
+        run: |
+          # Add any commands needed to install dependencies
+          # Example for PHP project with Composer:
+          # composer install
+
+      - name: Transfer Files to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          source: "."
+          target: "/var/www/html/test"  # Change this to the directory on your EC2 instance
+
+      - name: SSH into EC2 and Restart Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          script: |
+            # Add any commands needed to restart your application
+            # Example for PHP project:
+            cd /var/www/html/test
+            composer install
+            php artisan migrate
+            sudo service httpd restart
